@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: Text(
                       "Organize seus boletos em um só lugar",
-                      style: AppTextStyles.titleHome,
+                      style: TextStyles.titleHome,
                       textAlign: TextAlign.center,
                     ),
                   ),
