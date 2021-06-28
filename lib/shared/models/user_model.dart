@@ -6,6 +6,8 @@ class UserModel {
 
   UserModel({required this.name, this.photoUrl});
 
+  String get nickname => name.split(" ")[0];
+
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(name: map["name"], photoUrl: map["photoUrl"]);
   }

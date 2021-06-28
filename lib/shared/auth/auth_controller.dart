@@ -2,27 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:payflow/shared/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthController {
+class AuthController extends ChangeNotifier {
   UserModel? _user;
 
   UserModel? get user => _user;
 
-  void setUser(BuildContext context, UserModel? user) {
+  void setUser(BuildContext context, UserModel? user) async {
+    _user = user;
+
     if (user != null) {
-      _user = user;
-      saveUser(user);
+      await saveUser(user);
       Navigator.pushReplacementNamed(context, "/home");
     } else {
+      removeUser();
       Navigator.pushReplacementNamed(context, "/login");
     }
+    notifyListeners();
   }
 
   Future<void> saveUser(UserModel user) async {
     final instance = await SharedPreferences.getInstance();
+    print(user.toJson());
     instance.setString("user", user.toJson());
   }
 
-  Future<void> currentUser(BuildContext context) async {
+  Future<void> getCurrentAuth(BuildContext context) async {
     await Future.delayed(Duration(seconds: 2));
 
     final instance = await SharedPreferences.getInstance();
@@ -32,5 +36,10 @@ class AuthController {
     } else {
       setUser(context, null);
     }
+  }
+
+  void removeUser() async {
+    final instance = await SharedPreferences.getInstance();
+    instance.remove("user");
   }
 }
