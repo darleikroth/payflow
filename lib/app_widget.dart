@@ -31,13 +31,13 @@ class AppWidget extends StatelessWidget {
           primarySwatch: Colors.orange,
           primaryColor: AppColors.primary,
         ),
-        initialRoute: "/splash",
+        initialRoute: SplashPage.routeName,
         routes: {
-          "/splash": (c) => SplashPage(),
-          "/home": (c) => HomePage(),
-          "/login": (c) => LoginPage(),
-          "/barcode_scanner": (c) => BarcodeScannerPage(),
-          "/insert_boleto": (c) => InsertBoletoPage()
+          SplashPage.routeName: (c) => SplashPage(),
+          HomePage.routeName: (c) => HomePage(),
+          LoginPage.routeName: (c) => LoginPage(),
+          BarcodeScannerPage.routeName: (c) => BarcodeScannerPage(),
+          InsertBoletoPage.routeName: (c) => InsertBoletoPage(),
         },
       ),
     );

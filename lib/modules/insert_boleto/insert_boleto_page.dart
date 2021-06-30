@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:payflow/modules/insert_boleto/insert_boleto_controller.dart';
+import 'package:payflow/shared/models/boleto_model.dart';
 import 'package:payflow/shared/themes/app_colors.dart';
 import 'package:focus_detector/focus_detector.dart';
 import 'package:payflow/shared/themes/app_text_styles.dart';
@@ -9,6 +10,7 @@ import 'package:payflow/shared/widgets/input_text/input_text_widget.dart';
 import 'package:payflow/shared/widgets/set_label_buttons/set_label_buttons.dart';
 
 class InsertBoletoPage extends StatefulWidget {
+  static const routeName = '/insert_boleto';
   final String? barcode;
   const InsertBoletoPage({Key? key, this.barcode}) : super(key: key);
 
@@ -38,6 +40,28 @@ class _InsertBoletoPageState extends State<InsertBoletoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = ModalRoute.of(context)!.settings;
+    BoletoModel? args;
+    String initialName = "";
+
+    if (settings.arguments is Object) {
+      args = settings.arguments as BoletoModel;
+    }
+    if (args != null) {
+      if (args.name != null) {
+        initialName = args.name!;
+      }
+      if (args.value != null) {
+        moneyInputTextController.updateValue(args.value!);
+      }
+      if (args.dueDate != null) {
+        dueDateInputTextController.updateText(args.dueDate!);
+      }
+      if (args.barcode != null) {
+        barcodeInputTextController.text = args.barcode!;
+      }
+    }
+
     return FocusDetector(
       child: Scaffold(
         backgroundColor: AppColors.background,
@@ -70,6 +94,7 @@ class _InsertBoletoPageState extends State<InsertBoletoPage> {
                     children: [
                       InputTextWidget(
                         label: "Nome do boleto",
+                        initialValue: initialName,
                         icon: Icons.description_outlined,
                         validator: controller.validateName,
                         onChanged: (value) {
@@ -78,6 +103,7 @@ class _InsertBoletoPageState extends State<InsertBoletoPage> {
                       ),
                       InputTextWidget(
                         label: "Vencimento",
+                        // initialValue: args.dueDate,
                         controller: dueDateInputTextController,
                         icon: FontAwesomeIcons.timesCircle,
                         validator: controller.validateVencimento,
@@ -87,6 +113,7 @@ class _InsertBoletoPageState extends State<InsertBoletoPage> {
                       ),
                       InputTextWidget(
                         label: "Valor",
+                        // initialValue: args.value.toString(),
                         controller: moneyInputTextController,
                         icon: FontAwesomeIcons.wallet,
                         validator: (_) {
@@ -94,7 +121,7 @@ class _InsertBoletoPageState extends State<InsertBoletoPage> {
                             moneyInputTextController.numberValue,
                           );
                         },
-                        onChanged: (value) {
+                        onChanged: (_) {
                           controller.onChange(
                             value: moneyInputTextController.numberValue,
                           );
@@ -102,6 +129,7 @@ class _InsertBoletoPageState extends State<InsertBoletoPage> {
                       ),
                       InputTextWidget(
                         label: "Código",
+                        // initialValue: args.barcode,
                         controller: barcodeInputTextController,
                         icon: FontAwesomeIcons.barcode,
                         validator: controller.validateCodigo,

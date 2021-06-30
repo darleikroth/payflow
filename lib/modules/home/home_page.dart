@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:payflow/modules/home/home_controller.dart';
 import 'package:payflow/modules/login/login_controller.dart';
 import 'package:payflow/shared/auth/auth_controller.dart';
+import 'package:payflow/shared/models/boleto_model.dart';
 import 'package:payflow/shared/themes/app_colors.dart';
 import 'package:payflow/shared/themes/app_text_styles.dart';
+import 'package:payflow/shared/widgets/boleto_list/boleto_list_widget.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
+  static const routeName = '/home';
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -15,10 +18,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final controller = HomeController();
-  final pages = [
-    Container(color: Colors.cyan),
-    Container(color: Colors.deepPurpleAccent),
-  ];
   final iconHomeColor = [
     AppColors.primary,
     AppColors.body,
@@ -31,6 +30,23 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final loginController = LoginController();
+    final pages = [
+      Container(
+        child: BoletoListWidget(
+          onPress: (model) {
+            print(model.toJson());
+            Navigator.pushNamed(context, "/insert_boleto",
+                arguments: BoletoModel(
+                  barcode: model.barcode,
+                  dueDate: model.dueDate,
+                  name: model.name,
+                  value: model.value,
+                ));
+          },
+        ),
+      ),
+      Container(color: Colors.deepPurpleAccent),
+    ];
 
     Future<void> _showDialog() async {
       return showDialog<void>(
@@ -99,37 +115,40 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     var auth = context.watch<AuthController>();
 
-    return Container(
-      height: 152,
-      color: AppColors.primary,
-      child: Center(
-        child: ListTile(
-          title: Text.rich(TextSpan(
-              text: "Olá, ",
-              style: TextStyles.titleRegular,
-              children: [
-                TextSpan(
-                  text: auth.user?.nickname ?? "",
-                  style: TextStyles.titleBoldBackground,
+    return Material(
+      elevation: 4,
+      child: Container(
+        height: 152,
+        color: AppColors.primary,
+        child: Center(
+          child: ListTile(
+            title: Text.rich(TextSpan(
+                text: "Olá, ",
+                style: TextStyles.titleRegular,
+                children: [
+                  TextSpan(
+                    text: auth.user?.nickname ?? "",
+                    style: TextStyles.titleBoldBackground,
+                  ),
+                ])),
+            subtitle: Text(
+              "Mantenha suas contas em dia",
+              style: TextStyles.captionShape,
+            ),
+            trailing: InkWell(
+              onTap: showDialog,
+              child: Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  image: auth.user?.photoUrl != null
+                      ? DecorationImage(
+                          image: NetworkImage(auth.user!.photoUrl!),
+                          fit: BoxFit.fill)
+                      : null,
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(5),
                 ),
-              ])),
-          subtitle: Text(
-            "Mantenha suas contas em dia",
-            style: TextStyles.captionShape,
-          ),
-          trailing: InkWell(
-            onTap: showDialog,
-            child: Container(
-              height: 48,
-              width: 48,
-              decoration: BoxDecoration(
-                image: auth.user?.photoUrl != null
-                    ? DecorationImage(
-                        image: NetworkImage(auth.user!.photoUrl!),
-                        fit: BoxFit.fill)
-                    : null,
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(5),
               ),
             ),
           ),
@@ -155,37 +174,41 @@ class _BottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 90,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-            onPressed: onTapHome,
-            icon: Icon(Icons.home_outlined),
-            color: homeTintColor,
-          ),
-          GestureDetector(
-            onTap: () {
-              // Navigator.pushNamed(context, "/barcode_scanner");
-              Navigator.pushNamed(context, "/insert_boleto");
-            },
-            child: Container(
-              height: 56,
-              width: 56,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Icon(Icons.add_box_outlined),
+    return Material(
+      elevation: 16,
+      shadowColor: Colors.black,
+      child: Container(
+        height: 90,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              onPressed: onTapHome,
+              icon: Icon(Icons.home_outlined),
+              color: homeTintColor,
             ),
-          ),
-          IconButton(
-            onPressed: onTapDocument,
-            icon: Icon(Icons.description_outlined),
-            color: documentTintColor,
-          ),
-        ],
+            GestureDetector(
+              onTap: () {
+                // Navigator.pushNamed(context, "/barcode_scanner");
+                Navigator.pushNamed(context, "/insert_boleto");
+              },
+              child: Container(
+                height: 56,
+                width: 56,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(Icons.add_box_outlined),
+              ),
+            ),
+            IconButton(
+              onPressed: onTapDocument,
+              icon: Icon(Icons.description_outlined),
+              color: documentTintColor,
+            ),
+          ],
+        ),
       ),
     );
   }
